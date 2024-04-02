@@ -44,6 +44,11 @@ public class CallDetectionManagerModule
             activity = getCurrentActivity();
             activity.getApplication().registerActivityLifecycleCallbacks(this);
         }
+        else {
+            Log.e("CallDetectionManager", "Unable to start listener: Activity is null");
+            return;
+        }
+             }
 
         telephonyManager = (TelephonyManager) this.reactContext.getSystemService(
                 Context.TELEPHONY_SERVICE);
