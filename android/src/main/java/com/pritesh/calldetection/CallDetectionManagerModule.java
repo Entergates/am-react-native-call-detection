@@ -40,15 +40,22 @@ public class CallDetectionManagerModule
 
     @ReactMethod
     public void startListener() {
-        if (activity == null) {
-            activity = getCurrentActivity();
-            activity.getApplication().registerActivityLifecycleCallbacks(this);
-        }
-        else {
+         if (activity == null) {
+        activity = getCurrentActivity();
+        if (activity != null) {
+            Application application = activity.getApplication();
+            if (application != null) {
+                application.registerActivityLifecycleCallbacks(this);
+            } else {
+                Log.e("CallDetectionManager", "Unable to start listener: Application is null");
+                return;
+            }
+        } else {
             Log.e("CallDetectionManager", "Unable to start listener: Activity is null");
             return;
         }
-             }
+    }
+}
 
         telephonyManager = (TelephonyManager) this.reactContext.getSystemService(
                 Context.TELEPHONY_SERVICE);
@@ -60,11 +67,12 @@ public class CallDetectionManagerModule
 
     @ReactMethod
     public void stopListener() {
-        telephonyManager.listen(callDetectionPhoneStateListener,
-                PhoneStateListener.LISTEN_NONE);
+    if (telephonyManager != null && callDetectionPhoneStateListener != null) {
+        telephonyManager.listen(callDetectionPhoneStateListener, PhoneStateListener.LISTEN_NONE);
         telephonyManager = null;
         callDetectionPhoneStateListener = null;
     }
+}
 
     /**
      * @return a map of constants this module exports to JS. Supports JSON types.
